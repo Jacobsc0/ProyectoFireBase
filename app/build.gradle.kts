@@ -41,9 +41,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation ("com.google.firebase:firebase-firestore:23.0.0")
-    implementation ("com.google.firebase:firebase-analytics")
-    implementation (platform("com.google.firebase:firebase-bom:32.6.0"))
-    implementation ("com.android.support:multidex:1.0.3")
+    implementation("com.google.firebase:firebase-firestore:24.7.1")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
 
 }

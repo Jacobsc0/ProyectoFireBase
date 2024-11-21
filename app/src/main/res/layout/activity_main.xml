@@ -19,8 +19,6 @@
        app:layout_constraintTop_toTopOf="parent">
 
 
-
-
         <TextView
         android:layout_width="321dp"
         android:layout_height="28dp"

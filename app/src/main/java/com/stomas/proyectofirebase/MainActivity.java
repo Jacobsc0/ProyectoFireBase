@@ -12,9 +12,6 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -41,8 +38,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        CargarListaFirestore();
+
         db = FirebaseFirestore.getInstance();
+
+        CargarListaFirestore();
+
+
+
 
         txtCodigo = findViewById(R.id.txtCodigo);
         txtNombre = findViewById(R.id.txtNombre);
@@ -57,6 +59,37 @@ public class MainActivity extends AppCompatActivity {
         spMascota.setAdapter(adapter);
     }
 
+
+
+
+    public void CargarListaFirestore() {
+        db.collection("mascotas")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<String> listaMascotas = new ArrayList<>();
+
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String linea = "||" + document.getString("codigo") + "||" +
+                                        document.getString("nombre") + "||" +
+                                        document.getString("dueño") + "||" +
+                                        document.getString("direccion");
+                                listaMascotas.add(linea);
+                            }
+
+
+                            ArrayAdapter<String> adaptador = new ArrayAdapter<>(MainActivity.this,
+                                    android.R.layout.simple_list_item_1, listaMascotas);
+                            lista.setAdapter(adaptador);
+                        } else {
+                            Log.e("Firestore", "Error al obtener los datos: ", task.getException());
+                        }
+                    }
+                });
+    }
 
     public void enviarDatosFirestore(View view) {
         String codigo = txtCodigo.getText().toString();
@@ -76,41 +109,15 @@ public class MainActivity extends AppCompatActivity {
                 .document(codigo)
                 .set(mascota)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(MainActivity.this, "Datos Enviados a Firestore correctamente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Datos enviados a Firestore correctamente", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(MainActivity.this, "Error al enviar Datos a Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Error al enviar datos a Firestore" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
-    public void CargarLista() {
+
+    public void CargarLista(View view) {
         CargarListaFirestore();
-    }
-
-    public void CargarListaFirestore() {
-        db.collection("mascotas")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            List<String> listaMascotas = new ArrayList<>();
-
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String linea = "||" + document.getString("codigo") + "||" +
-                                        document.getString("nombre") + "||" +
-                                        document.getString("dueño") + "||" +
-                                        document.getString("direccion");
-                                listaMascotas.add(linea);
-                            }
-
-                            ArrayAdapter<String> adaptador = new ArrayAdapter<>(MainActivity.this,
-                                    android.R.layout.simple_list_item_1, listaMascotas);
-                            lista.setAdapter(adaptador);
-                        } else {
-                            Log.e("TAG", "Error al obtener datos de Firestore", task.getException());
-                        }
-                    }
-                });
     }
 }
